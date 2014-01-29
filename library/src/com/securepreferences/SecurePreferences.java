@@ -85,27 +85,37 @@ public class SecurePreferences implements SharedPreferences {
 	 *            the caller's context
 	 */
 	public SecurePreferences(Context context) {
-		// Proxy design pattern
-		if (SecurePreferences.sFile == null) {
-			SecurePreferences.sFile = PreferenceManager
-					.getDefaultSharedPreferences(context);
-		}
-		// Initialize encryption/decryption key
-		try {
-			final String key = SecurePreferences.generateAesKeyName(context);
-			String value = SecurePreferences.sFile.getString(key, null);
-			if (value == null) {
-				value = SecurePreferences.generateAesKeyValue();
-				SecurePreferences.sFile.edit().putString(key, value).commit();
-			}
-			SecurePreferences.sKey = SecurePreferences.decode(value);
-		} catch (Exception e) {
-			if (sLoggingEnabled) {
-				Log.e(TAG, "Error init:" + e.getMessage());
-			}
-			throw new IllegalStateException(e);
-		}
+        init(context);
 	}
+
+    public SecurePreferences(Context context, String preferencesName) {
+        SecurePreferences.sFile = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+        init(context);
+    }
+
+    private void init(Context context)
+    {
+        // Proxy design pattern
+        if (SecurePreferences.sFile == null) {
+            SecurePreferences.sFile = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+        }
+        // Initialize encryption/decryption key
+        try {
+            final String key = SecurePreferences.generateAesKeyName(context);
+            String value = SecurePreferences.sFile.getString(key, null);
+            if (value == null) {
+                value = SecurePreferences.generateAesKeyValue();
+                SecurePreferences.sFile.edit().putString(key, value).commit();
+            }
+            SecurePreferences.sKey = SecurePreferences.decode(value);
+        } catch (Exception e) {
+            if (sLoggingEnabled) {
+                Log.e(TAG, "Error init:" + e.getMessage());
+            }
+            throw new IllegalStateException(e);
+        }
+    }
 
 	private static String encode(byte[] input) {
 		return Base64.encodeToString(input, Base64.NO_PADDING | Base64.NO_WRAP);

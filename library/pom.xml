@@ -8,6 +8,13 @@
     <version>0.0.3</version>
 	<name>Android secure preferences</name>
 	
+    <distributionManagement>
+        <repository>
+            <id>android</id>
+            <url>http://nexus.iddiction.com/content/repositories/android</url>
+        </repository>
+    </distributionManagement>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
