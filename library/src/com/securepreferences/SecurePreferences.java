@@ -63,15 +63,10 @@ import com.securepreferences.util.Base64;
 public class SecurePreferences implements SharedPreferences {
 
 	private static final int KEY_SIZE = 256;
-	// requires Spongycastle crypto libraries
-	// private static final String AES_KEY_ALG = "AES/GCM/NoPadding";
-	// private static final String AES_KEY_ALG = "AES/CBC/PKCS5Padding";
 	private static final String AES_KEY_ALG = "AES";
 	private static final String PRIMARY_PBE_KEY_ALG = "PBKDF2WithHmacSHA1";
 	private static final String BACKUP_PBE_KEY_ALG = "PBEWithMD5AndDES";
 	private static final int ITERATIONS = 2000;
-	// change to SC if using Spongycastle crypto libraries
-	private static final String PROVIDER = "BC";
 
 	private static SharedPreferences sFile;
 	private static byte[] sKey;
@@ -176,7 +171,7 @@ public class SecurePreferences implements SharedPreferences {
 		}
 
 		SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(
-				algorthm, PROVIDER);
+				algorthm);
 		KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations,
 				keyLength);
 		SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
@@ -230,7 +225,7 @@ public class SecurePreferences implements SharedPreferences {
 			return cleartext;
 		}
 		try {
-			final Cipher cipher = Cipher.getInstance(AES_KEY_ALG, PROVIDER);
+			final Cipher cipher = Cipher.getInstance(AES_KEY_ALG);
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(
 					SecurePreferences.sKey, AES_KEY_ALG));
 			return SecurePreferences.encode(cipher.doFinal(cleartext
@@ -248,7 +243,7 @@ public class SecurePreferences implements SharedPreferences {
 			return ciphertext;
 		}
 		try {
-			final Cipher cipher = Cipher.getInstance(AES_KEY_ALG, PROVIDER);
+			final Cipher cipher = Cipher.getInstance(AES_KEY_ALG);
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(
 					SecurePreferences.sKey, AES_KEY_ALG));
 			return new String(cipher.doFinal(SecurePreferences
